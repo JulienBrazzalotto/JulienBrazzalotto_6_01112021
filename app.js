@@ -1,13 +1,14 @@
 const express = require('express');
-
 const mongoose = require('mongoose');
 const path = require('path');
 
 const userRoutes = require('./routes/user');
 const sauceRoutes = require('./routes/sauce');
 
+require('dotenv').config()
+
 //Permet de se connecter à la base de données
-mongoose.connect('mongodb+srv://julien:mdp32@cluster0.j6xyn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+mongoose.connect(process.env.MONGO_DB_URL,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
@@ -24,7 +25,7 @@ app.use((req, res, next) => {
   });
 
   
-app.use(express.json()); //Remplace bodyparser et analyse donc le corps de la requête
+app.use(express.json()); //Remplace body-parser et analyse donc le corps de la requête
 
 app.use('/images', express.static(path.join(__dirname, 'images'))); //Pour chaque requête envoyé à images on sert ce dossier statique images
 app.use('/api/auth', userRoutes);

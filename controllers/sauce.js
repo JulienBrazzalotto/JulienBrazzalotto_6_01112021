@@ -44,8 +44,12 @@ exports.getOneSauce = (req, res, next) => {
         .catch(error => res.status(404).json({error}));
 }
 
-exports.getAllSauce =(req, res, next) => {
+exports.getAllSauce = (req, res, next) => {
     Sauce.find() //Recherche toutes les sauces
     .then(sauces => res.status(200).json(sauces))
     .catch(error => res.status(400).json({error}));
+}
+
+exports.likedStatus = (req, res, next) => {
+    
 }

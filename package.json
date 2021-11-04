@@ -1,24 +1,25 @@
 {
-  "name": "julienbrazzalotto_6_02112021",
-  "version": "1.0.0",
-  "description": "JulienBrazzalotto_6_02112021",
+  "name": "julienbrazzalotto_6_01112021",
+  "version": "0.1.0",
+  "description": "Projet 6 intitulé Piiquante du parcours Développeur web d'Openclassrooms",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JulienBrazzalotto/JulienBrazzalotto_6_02112021.git"
+    "url": "git+https://github.com/JulienBrazzalotto/JulienBrazzalotto_6_01112021.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Brazzalotto",
+  "license": "Apache",
   "bugs": {
-    "url": "https://github.com/JulienBrazzalotto/JulienBrazzalotto_6_02112021/issues"
+    "url": "https://github.com/JulienBrazzalotto/JulienBrazzalotto_6_01112021/issues"
   },
-  "homepage": "https://github.com/JulienBrazzalotto/JulienBrazzalotto_6_02112021#readme",
+  "homepage": "https://github.com/JulienBrazzalotto/JulienBrazzalotto_6_01112021#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.12",

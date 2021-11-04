@@ -24,7 +24,7 @@ app.use((req, res, next) => {
   });
 
   
-app.use(express.json());
+app.use(express.json()); //Remplace bodyparser et analyse donc le corps de la requête
 
 app.use('/images', express.static(path.join(__dirname, 'images'))); //Pour chaque requête envoyé à images on sert ce dossier statique images
 app.use('/api/auth', userRoutes);

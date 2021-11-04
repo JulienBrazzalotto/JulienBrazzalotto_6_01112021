@@ -32,7 +32,7 @@ exports.deleteSauce = (req, res, next) => {
         fs.unlink(`images/${filename}`, () => { //Supprime l'image du dossier images
             Sauce.deleteOne({ _id: req.params.id }) //Supprime cette sauce identifiée avec cet Id
                 .then(() => res.status(200).json({ message: 'Sauce supprimée !'}))
-                .catch(error => res.status(400).json({ error }));
+                .catch(error => res.status(400).json({error}));
         });
     })
     .catch(error => res.status(500).json({ error }));
@@ -41,7 +41,7 @@ exports.deleteSauce = (req, res, next) => {
 exports.getOneSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id }) //Recherche la sauce avec cet Id
         .then(sauce => res.status(200).json(sauce))
-        .catch(error => res.status(404).json({ error }));
+        .catch(error => res.status(404).json({error}));
 }
 
 exports.getAllSauce =(req, res, next) => {

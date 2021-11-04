@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const helmet = require("helmet");
+const mongoSanitize = require('express-mongo-sanitize');
 
 const userRoutes = require('./routes/user');
 const sauceRoutes = require('./routes/sauce');
@@ -20,6 +21,7 @@ const app = express(); //initialise express
 
 app.use(helmet()); //Helmet aide à protéger l'application de certaines des vulnérabilités bien connues du Web en configurant de manière appropriée des en-têtes HTTP.
 
+app.use(mongoSanitize()); //Nettoie les données fournies par l'utilisateur pour éviter l'injection d'opérateurs MongoDB.
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*'); //Permet d'accéder a l'API depuis n'importe quelle origine

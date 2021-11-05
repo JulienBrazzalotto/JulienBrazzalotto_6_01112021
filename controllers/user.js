@@ -20,27 +20,28 @@ schema
 
 
 exports.signup = (req, res, next) => {
-    if (emailValidator.validate(req.body.email) && schema.validate(req.body.password)){//si l'email et le mot de passe OK alors
-        bcrypt.hash(req.body.password, 10) //Permet de hash le password avec un salage de 10 tours
-            .then(hash =>{
-                const user = new User({ //Créé un nouvel utilisateur
-                    email: req.body.email,
-                    password: hash
-                });
-                
-                user.save() //Sauvegarde dans la base de données
-                    .then(() => res.status(201).json({message: 'Utilisateur créé !'}))
-                    .catch(error => res.status(400).json({error}));
-                
-            })
-            .catch(error => res.status(500).json({error}));
-
-    } else if (!emailValidator.validate(req.body.email)){
+    if (!emailValidator.validate(req.body.email)){//si l'email n'est pas valide alors
         return res.status(401).json({message: 'Veuillez entrer une adresse email valide'});
+    }
 
-    } else if (!schema.validate(req.body.password)){ //Si le password n'est pas valide // au schema
+    if (!schema.validate(req.body.password)){ //Si le password n'est pas valide // au schema
         return res.status(401).json({message: 'Le mot de passe doit avoir une longueur de 3 a 50 caractères avec au moins un chiffre, une minuscule, une majuscule et ne possédant pas d\'espace !!!'});
     };
+
+    
+    bcrypt.hash(req.body.password, 10) //Permet de hash le password avec un salage de 10 tours
+        .then(hash =>{
+            const user = new User({ //Créé un nouvel utilisateur
+                email: req.body.email,
+                password: hash
+            });
+            
+            user.save() //Sauvegarde dans la base de données
+                .then(() => res.status(201).json({message: 'Utilisateur créé !'}))
+                .catch(error => res.status(400).json({error}));
+            
+        })
+        .catch(error => res.status(500).json({error}));
 }
 
 

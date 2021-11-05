@@ -1,10 +1,21 @@
 const bcrypt = require('bcrypt'); //Permet de crypter le mot de passe
 const jwt = require('jsonwebtoken'); //Permet de créer et vérifier les tokens d'authentification
-
+const passwordValidator = require('password-validator'); //Permet d'avoir des critères du password
 
 const User = require('../models/user');
 
 require('dotenv').config()
+
+
+const schema = new passwordValidator(); //Configuration du modèle du password
+schema
+  .is().min(3) //longueur minimale de 3
+  .is().max(50) //longueur minimale de 50
+  .has().uppercase() //Majuscule obligatoire
+  .has().lowercase() //Minuscule obligatoire
+  .has().digits(1) // Au moins 1 chiffre
+  .has().not().spaces(); //Ne possède pas d'espace
+
 
 
 exports.signup = (req, res, next) => {
@@ -14,9 +25,14 @@ exports.signup = (req, res, next) => {
                 email: req.body.email,
                 password: hash
             });
-            user.save() //Sauvegarde dans la base de données
-                .then(() => res.status(201).json({message: 'Utilisateur créé !'}))
-                .catch(error => res.status(400).json({error}));
+            
+            if(schema.validate(req.body.password)){ //Si le password est valide // au schema
+                user.save() //Sauvegarde dans la base de données
+                    .then(() => res.status(201).json({message: 'Utilisateur créé !'}))
+                    .catch(error => res.status(400).json({error}));
+            } else {
+                return res.status(401).json({message: 'Le mot de passe doit avoir une longueur de 3 a 50 caractères avec au moins un chiffre, une minuscule, une majuscule et ne possédant pas d\'espace !!!'});
+            }
         })
         .catch(error => res.status(500).json({error}));
 };

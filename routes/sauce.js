@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router(); //Permet de créer un router express
 
 
 const auth = require('../middleware/auth')
@@ -12,5 +12,6 @@ router.put('/:id', auth, multer, sauceCtrl.modifySauce);
 router.delete('/:id', auth, sauceCtrl.deleteSauce);
 router.get('/:id', auth, sauceCtrl.getOneSauce);
 router.get('/', auth, sauceCtrl.getAllSauce);
+router.post('/:id/like', auth, sauceCtrl.likedStatus)
 
 module.exports = router;

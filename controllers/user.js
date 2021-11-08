@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt'); //Permet de crypter le mot de passe
 const jwt = require('jsonwebtoken'); //Permet de créer et vérifier les tokens d'authentification
-const passwordValidator = require('password-validator'); //Permet d'avoir des critères du password
+const passwordValidator = require('password-validator'); //Permet d'avoir des critères sur le password
+const emailValidator = require("email-validator"); //Permet d'avoir un email valide
 
 const User = require('../models/user');
 
@@ -19,6 +20,15 @@ schema
 
 
 exports.signup = (req, res, next) => {
+    if (!emailValidator.validate(req.body.email)){//si l'email n'est pas valide alors
+        return res.status(401).json({message: 'Veuillez entrer une adresse email valide'});
+    }
+
+    if (!schema.validate(req.body.password)){ //Si le password n'est pas valide // au schema
+        return res.status(401).json({message: 'Le mot de passe doit avoir une longueur de 3 a 50 caractères avec au moins un chiffre, une minuscule, une majuscule et ne possédant pas d\'espace !!!'});
+    };
+
+    
     bcrypt.hash(req.body.password, 10) //Permet de hash le password avec un salage de 10 tours
         .then(hash =>{
             const user = new User({ //Créé un nouvel utilisateur
@@ -26,16 +36,14 @@ exports.signup = (req, res, next) => {
                 password: hash
             });
             
-            if(schema.validate(req.body.password)){ //Si le password est valide // au schema
-                user.save() //Sauvegarde dans la base de données
-                    .then(() => res.status(201).json({message: 'Utilisateur créé !'}))
-                    .catch(error => res.status(400).json({error}));
-            } else {
-                return res.status(401).json({message: 'Le mot de passe doit avoir une longueur de 3 a 50 caractères avec au moins un chiffre, une minuscule, une majuscule et ne possédant pas d\'espace !!!'});
-            }
+            user.save() //Sauvegarde dans la base de données
+                .then(() => res.status(201).json({message: 'Utilisateur créé !'}))
+                .catch(error => res.status(400).json({error}));
+            
         })
         .catch(error => res.status(500).json({error}));
-};
+}
+
 
 exports.login = (req, res, next) => {
     User.findOne({email: req.body.email}) //Recherche l'email utilisateur dans la base de données

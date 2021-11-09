@@ -21,14 +21,13 @@ exports.createSauce = (req, res, next) => {
 
 
 exports.modifySauce = (req, res, next) => {
-    if(req.file){
-        Sauce.findById(req.params.id) 
+    if(req.file){ //si on trouve un fichier image dans la requête alors
+        Sauce.findOne({ _id: req.params.id }) //Recherche la sauce avec cet Id
         .then(sauce => {
             const filename = sauce.imageUrl.split('/images/')[1];
-            fs.unlink(`images/${filename}`, (err) => {
+            fs.unlink(`images/${filename}`, (err) => { //supprime cette photo qui est donc l'ancienne
                 if (err) 
                 throw err
-                console.log(`images/${filename}` + 'a été supprimée');
             });
         })
         .catch(error => res.status(400).json({error}));
@@ -37,7 +36,7 @@ exports.modifySauce = (req, res, next) => {
     const sauceObject = req.file ? // si on trouve un fichier image dans la requête alors
     {
         ...JSON.parse(req.body.sauce), //on récupère l'objet json
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` //et on modifie l'image URL
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` //et on ajoute l'image URL
     } : { ...req.body} //sinon on prend le corps de la requête
     Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id }) //On modifie celui dont l'ID est égale à l'ID envoyé dans les paramètres de requêtes
         .then(() => res.status(200).json({message:'Sauce modifiée'}))

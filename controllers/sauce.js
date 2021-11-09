@@ -2,6 +2,8 @@ const Sauce = require('../models/sauce');
 const fs = require('fs'); //Permet d'avoir accès aux différentes opérations liées au système de fichiers
 const { error } = require('console');
 
+
+
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce); //Récupère l'objet json de la sauce
     delete sauceObject._id;
@@ -16,8 +18,23 @@ exports.createSauce = (req, res, next) => {
     .catch(error => res.status(400).json({error}));
 }
 
+
+
 exports.modifySauce = (req, res, next) => {
-    const sauceObject = req.file ? // si on trouve un fichier dans la requête alors
+    if(req.file){
+        Sauce.findById(req.params.id) 
+        .then(sauce => {
+            const filename = sauce.imageUrl.split('/images/')[1];
+            fs.unlink(`images/${filename}`, (err) => {
+                if (err) 
+                throw err
+                console.log(`images/${filename}` + 'a été supprimée');
+            });
+        })
+        .catch(error => res.status(400).json({error}));
+    }
+
+    const sauceObject = req.file ? // si on trouve un fichier image dans la requête alors
     {
         ...JSON.parse(req.body.sauce), //on récupère l'objet json
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` //et on modifie l'image URL
@@ -26,6 +43,8 @@ exports.modifySauce = (req, res, next) => {
         .then(() => res.status(200).json({message:'Sauce modifiée'}))
         .catch(error => res.status(400).json({error}));
 }
+
+
 
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id }) //Recherche la sauce avec cet Id
@@ -40,11 +59,15 @@ exports.deleteSauce = (req, res, next) => {
     .catch(error => res.status(500).json({ error }));
 }
 
+
+
 exports.getOneSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id }) //Recherche la sauce avec cet Id
         .then(sauce => res.status(200).json(sauce))
         .catch(error => res.status(404).json({error}));
 }
+
+
 
 exports.getAllSauce = (req, res, next) => {
     Sauce.find() //Recherche toutes les sauces
@@ -56,17 +79,21 @@ exports.getAllSauce = (req, res, next) => {
 
 exports.likedStatus = (req, res, next) => {
 
-        if (req.body.like === 1) {
-            Sauce.updateOne(
+        if (req.body.like === 1) { //si like est a 1
+            Sauce.updateOne( //On modifie celui dont l'ID est égale à l'ID envoyé dans les paramètres de requêtes avec Likes a 1 et userId dans le tableau usersLiked
                 { _id: req.params.id }, 
                 { $inc: { likes: 1 }, $push: { usersLiked: req.body.userId }}, 
                 { _id: req.params.id }
-            )//On modifie celui dont l'ID est égale à l'ID envoyé dans les paramètres de requêtes avec Likes a 1 et userId dans le tableau usersLiked
+            )
               .then(() => res.status(200).json({ message: 'J\'aime' }))
               .catch((error) => res.status(400).json({ error }));
 
-        } else if (req.body.like === -1) {
-            Sauce.updateOne({ _id: req.params.id }, { $inc: { dislikes: 1 }, $push: { usersDisliked: req.body.userId }}, { _id: req.params.id })//On modifie celui dont l'ID est égale à l'ID envoyé dans les paramètres de requêtes avec Dislikes a 1 et userId dans le tableau userDisLiked
+        } else if (req.body.like === -1) { //si like est a -1
+            Sauce.updateOne( //On modifie celui dont l'ID est égale à l'ID envoyé dans les paramètres de requêtes avec Dislikes a 1 et userId dans le tableau userDisLiked
+            { _id: req.params.id },
+            { $inc: { dislikes: 1 }, $push: { usersDisliked: req.body.userId }},
+            { _id: req.params.id }
+            )
               .then(() => res.status(200).json({ message: 'Je n\'aime pas' }))
               .catch((error) => res.status(400).json({ error }));
               
@@ -74,11 +101,20 @@ exports.likedStatus = (req, res, next) => {
             Sauce.findOne({ _id: req.params.id })
             .then((sauce) => {
                 if (sauce.usersLiked.includes(req.body.userId)){ //si userId est présent dans le tableau usersLiked alors
-                    Sauce.updateOne({ _id: req.params.id }, { $inc: { likes: -1 }, $pull: { usersLiked: req.body.userId }}, { _id: req.params.id })//On modifie celui dont l'ID est égale à l'ID envoyé dans les paramètres de requêtes avec Like a -1 et en enlevant userId dans le tableau usersLiked
+                    Sauce.updateOne( //On modifie celui dont l'ID est égale à l'ID envoyé dans les paramètres de requêtes avec Like a -1 et en enlevant userId dans le tableau usersLiked
+                    { _id: req.params.id },
+                    { $inc: { likes: -1 }, $pull: { usersLiked: req.body.userId }},
+                    { _id: req.params.id }
+                    )
                         .then(() => res.status(200).json({ message: 'Je n\'aime plus' }))
                         .catch((error) => res.status(400).json({ error }));
+                
                 } else if (sauce.usersDisliked.includes(req.body.userId)){ //si userId est présent dans le tableau usersDisliked alors
-                    Sauce.updateOne({ _id: req.params.id }, { $inc: { dislikes: -1 }, $pull: { usersDisliked: req.body.userId }}, { _id: req.params.id })//On modifie celui dont l'ID est égale à l'ID envoyé dans les paramètres de requêtes avec Dislike a -1 et en enlevant userId dans le tableau usersDisliked
+                    Sauce.updateOne( //On modifie celui dont l'ID est égale à l'ID envoyé dans les paramètres de requêtes avec Dislike a -1 et en enlevant userId dans le tableau usersDisliked
+                    { _id: req.params.id },
+                    { $inc: { dislikes: -1 }, $pull: { usersDisliked: req.body.userId }},
+                    { _id: req.params.id }
+                    )
                         .then(() => res.status(200).json({ message: 'Je commence à aimer' }))
                         .catch((error) => res.status(400).json({ error }));
                 }}

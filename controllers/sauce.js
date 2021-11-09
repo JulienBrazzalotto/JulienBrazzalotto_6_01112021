@@ -19,7 +19,7 @@ exports.createSauce = (req, res, next) => {
 exports.modifySauce = (req, res, next) => {
     const sauceObject = req.file ? // si on trouve un fichier dans la requête alors
     {
-        ...JSON.parse(req.body.sauce), //on récupère l'objet json
+        ...JSON.parse(req.body.Sauce), //on récupère l'objet json
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` //et on modifie l'image URL
     } : { ...req.body} //sinon on prend le corps de la requête
     Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id }) //On modifie celui dont l'ID est égale à l'ID envoyé dans les paramètres de requêtes

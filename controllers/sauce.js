@@ -1,6 +1,5 @@
 const Sauce = require('../models/sauce');
 const fs = require('fs'); //Permet d'avoir accès aux différentes opérations liées au système de fichiers
-const { error } = require('console');
 
 
 
